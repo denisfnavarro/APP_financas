@@ -1,0 +1,165 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.75rem;
+
+  --background: oklch(0.99 0.002 247);
+  --foreground: oklch(0.21 0.02 256);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.02 256);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.02 256);
+
+  /* Acento azul */
+  --primary: oklch(0.55 0.16 253);
+  --primary-foreground: oklch(0.99 0.003 247);
+
+  --secondary: oklch(0.968 0.006 247);
+  --secondary-foreground: oklch(0.28 0.02 256);
+
+  --muted: oklch(0.968 0.006 247);
+  --muted-foreground: oklch(0.55 0.02 257);
+
+  --accent: oklch(0.968 0.006 247);
+  --accent-foreground: oklch(0.28 0.02 256);
+
+  --destructive: oklch(0.58 0.21 27);
+  --destructive-foreground: oklch(0.99 0.003 247);
+
+  /* Acento verde (receitas) */
+  --success: oklch(0.6 0.13 158);
+  --success-foreground: oklch(0.99 0.003 247);
+
+  --border: oklch(0.923 0.006 255);
+  --input: oklch(0.923 0.006 255);
+  --ring: oklch(0.55 0.16 253);
+
+  /* Cores de categoria e de série — hexes validados com scripts/validate_palette.js
+     (pares adjacentes, modos claro e escuro). Cada categoria tem uma cor fixa:
+     a cor segue a entidade, nunca a posição no ranking. */
+  --cat-alimentacao: #eb6834;
+  --cat-transporte: #1baf7a;
+  --cat-moradia: #eda100;
+  --cat-lazer: #e87ba4;
+  --cat-saude: #4a3aa7;
+  --cat-educacao: #e34948;
+  --cat-salario: #008300;
+  --cat-freelance: #2a78d6;
+  --cat-outros: #8a8f98; /* bucket "demais": neutro de propósito */
+
+  --serie-receita: #1baf7a;
+  --serie-despesa: #e34948;
+
+  --chart-grid: #e6e7ea;
+  --chart-axis: #8a8f98;
+  --chart-surface: #ffffff;
+}
+
+.dark {
+  --background: oklch(0.17 0.015 258);
+  --foreground: oklch(0.97 0.003 247);
+
+  --card: oklch(0.21 0.018 258);
+  --card-foreground: oklch(0.97 0.003 247);
+
+  --popover: oklch(0.21 0.018 258);
+  --popover-foreground: oklch(0.97 0.003 247);
+
+  --primary: oklch(0.68 0.14 253);
+  --primary-foreground: oklch(0.18 0.02 258);
+
+  --secondary: oklch(0.27 0.02 258);
+  --secondary-foreground: oklch(0.97 0.003 247);
+
+  --muted: oklch(0.27 0.02 258);
+  --muted-foreground: oklch(0.7 0.015 257);
+
+  --accent: oklch(0.27 0.02 258);
+  --accent-foreground: oklch(0.97 0.003 247);
+
+  --destructive: oklch(0.66 0.19 25);
+  --destructive-foreground: oklch(0.98 0.003 247);
+
+  --success: oklch(0.7 0.14 160);
+  --success-foreground: oklch(0.18 0.02 258);
+
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.68 0.14 253);
+
+  --cat-alimentacao: #d95926;
+  --cat-transporte: #199e70;
+  --cat-moradia: #c98500;
+  --cat-lazer: #d55181;
+  --cat-saude: #9085e9;
+  --cat-educacao: #e66767;
+  --cat-salario: #008300;
+  --cat-freelance: #3987e5;
+  --cat-outros: #8a8f98;
+
+  --serie-receita: #199e70;
+  --serie-despesa: #e66767;
+
+  --chart-grid: #262c36;
+  --chart-axis: #8a8f98;
+  --chart-surface: #131921;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-cat-alimentacao: var(--cat-alimentacao);
+  --color-cat-transporte: var(--cat-transporte);
+  --color-cat-moradia: var(--cat-moradia);
+  --color-cat-lazer: var(--cat-lazer);
+  --color-cat-saude: var(--cat-saude);
+  --color-cat-educacao: var(--cat-educacao);
+  --color-cat-salario: var(--cat-salario);
+  --color-cat-freelance: var(--cat-freelance);
+  --color-cat-outros: var(--cat-outros);
+  --color-serie-receita: var(--serie-receita);
+  --color-serie-despesa: var(--serie-despesa);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+  }
+}
