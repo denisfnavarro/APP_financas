@@ -35,8 +35,8 @@ export function SetupNotice() {
           </li>
         </ol>
         <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs leading-relaxed">
-{`NEXT_PUBLIC_SUPABASE_URL=https://SEU-PROJETO.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave-anon-publica`}
+{`SUPABASE_URL=https://SEU-PROJETO.supabase.co
+SUPABASE_ANON_KEY=sua-chave-anon-ou-publishable`}
         </pre>
       </CardContent>
     </Card>

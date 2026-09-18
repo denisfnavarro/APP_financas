@@ -15,8 +15,8 @@ export function env(name, fallback) {
 
 export function supabaseEnv() {
   return {
-    url: env("NEXT_PUBLIC_SUPABASE_URL"),
-    key: env("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    url: env("SUPABASE_URL"),
+    key: env("SUPABASE_ANON_KEY"),
   };
 }
 

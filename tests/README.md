@@ -53,8 +53,8 @@ projeto. Remova os `teste-*@example.com` em **Authentication → Users**.
 
 | Variável | Padrão | Para quê |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | — | vem do `.env.local` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | — | vem do `.env.local` |
+| `SUPABASE_URL` | — | vem do `.env.local` |
+| `SUPABASE_ANON_KEY` | — | vem do `.env.local` |
 | `BASE_URL` | `http://localhost:3000` | onde o app está rodando (só `e2e.mjs`) |
 | `CHROME_PATH` | detectado | caminho do Chrome, se não estiver no lugar padrão |
 | `SHOTS_DIR` | `/tmp` | onde salvar os screenshots do `e2e.mjs` |

@@ -87,11 +87,16 @@ cp .env.example .env.local
 Preencha:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://SEU-PROJETO.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave-anon-publica
+SUPABASE_URL=https://SEU-PROJETO.supabase.co
+SUPABASE_ANON_KEY=sua-chave-anon-ou-publishable
 ```
 
-A chave *anon* é pública por design — quem protege os dados é a RLS.
+**Repare que não há prefixo `NEXT_PUBLIC_`.** Isso é proposital: no Next, toda
+variável `NEXT_PUBLIC_` é inlinada no JavaScript que o navegador baixa. Como
+nenhum componente de cliente fala com o Supabase — autenticação e CRUD passam
+por Server Actions —, as credenciais ficam só no servidor. O
+`src/lib/supabase/env.ts` importa `server-only`, então o build quebra se alguém
+tentar usá-las a partir do navegador.
 
 ### 3. Suba o app
 
@@ -126,14 +131,72 @@ Os dois precisam de **Confirm email desligado** enquanto rodam, e criam usuário
 `teste-*@example.com` que você apaga depois em *Authentication → Users*. Detalhes
 em [`tests/README.md`](tests/README.md).
 
+## Segurança
+
+| Camada | O que protege |
+| --- | --- |
+| Credenciais só no servidor | Nenhuma chave do Supabase vai para o bundle do navegador |
+| Row Level Security | O banco recusa acesso aos dados de outra conta, mesmo com a chave em mãos |
+| Server Actions | Valor, categoria, tipo e descrição são validados no servidor, não só no formulário |
+| `redirectTo` restrito | Só aceita caminhos internos, para não virar redirecionamento aberto |
+| Cabeçalhos HTTP | `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`, HSTS |
+
+Para conferir que nenhuma credencial vazou para o navegador depois de mexer no código:
+
+```bash
+npm run build
+grep -rl "supabase.co" .next/static/ || echo "nenhuma credencial no bundle"
+```
+
+Duas notas sobre chaves:
+
+- A `anon`/`publishable` é de baixo privilégio e **sempre** sujeita à RLS. Mesmo
+  assim, mantê-la fora do navegador evita que ela seja raspada e usada para
+  bater direto na sua API, gastando cota do projeto.
+- A `service_role` **ignora toda a RLS**. Ela não é usada em lugar nenhum deste
+  projeto e nunca deve entrar no `.env` de um app Next.
+
 ## Deploy na Vercel
 
-1. Suba o repositório para o GitHub.
-2. Importe o projeto na Vercel.
-3. Em **Settings → Environment Variables**, adicione `NEXT_PUBLIC_SUPABASE_URL` e
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-4. No Supabase, em **Authentication → URL Configuration**, inclua o domínio da
-   Vercel em *Site URL* e em *Redirect URLs* (`https://SEU-APP.vercel.app/auth/callback`).
+### 1. Importe o projeto
+
+Suba o repositório para o GitHub e importe na Vercel. O Next é detectado
+sozinho — não mexa em build command nem output directory.
+
+### 2. Variáveis de ambiente
+
+Em **Settings → Environment Variables**, para *Production*, *Preview* e *Development*:
+
+| Nome | Valor |
+| --- | --- |
+| `SUPABASE_URL` | a Project URL do Supabase |
+| `SUPABASE_ANON_KEY` | a chave anon / publishable |
+
+Não precisa cadastrar `SITE_URL`: em produção o app usa a
+`VERCEL_PROJECT_PRODUCTION_URL`, que a Vercel injeta sozinha.
+
+> Se o deploy subir mas o app abrir na tela de setup, é porque as variáveis não
+> foram cadastradas — ou foram cadastradas só em *Production* e você está
+> olhando um *Preview*. Depois de adicionar, refaça o deploy: variáveis novas
+> não entram em um build já existente.
+
+### 3. Libere as URLs no Supabase
+
+Em **Authentication → URL Configuration**:
+
+- **Site URL**: `https://SEU-APP.vercel.app`
+- **Redirect URLs**: `https://SEU-APP.vercel.app/auth/callback`
+
+Se for usar os *preview deployments*, adicione também
+`https://SEU-APP-*.vercel.app/auth/callback` — cada preview ganha um subdomínio
+diferente, e sem o curinga a confirmação de e-mail falha só ali.
+
+### 4. Antes de abrir para outras pessoas
+
+- **Confirm email ligado** (*Authentication → Sign In / Providers → Email*).
+- **SMTP próprio configurado** — veja o aviso na seção de instalação. Sem isso,
+  o e-mail de confirmação simplesmente não chega para quem não é do projeto.
+- Confira os cabeçalhos: `curl -sI https://SEU-APP.vercel.app | grep -i x-frame`.
 
 ## Organização do código
 
