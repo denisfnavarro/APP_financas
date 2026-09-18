@@ -42,11 +42,41 @@ contas é garantido por RLS no banco.
 2. Abra **SQL Editor** e rode o conteúdo de
    [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql).
    Ele cria a tabela `transactions`, os índices e as políticas de RLS.
-3. Em **Project Settings → API**, copie a *Project URL* e a chave *anon public*.
+3. Em **Project Settings → API**, copie a *Project URL* e a chave *anon public*
+   (nos projetos novos ela aparece como *publishable key*, `sb_publishable_...`;
+   serve no mesmo lugar).
 
-> Para testar sem confirmar e-mail, desligue **Authentication → Providers → Email →
-> Confirm email**. Deixando ligado, o cadastro só entra depois do clique no link,
-> que volta para `/auth/callback`.
+#### Duas armadilhas do painel
+
+**"Last migration: No migrations" não quer dizer que faltou rodar o SQL.** Esse
+indicador só conta migrations aplicadas pela CLI do Supabase. SQL colado no
+editor não aparece ali. Para saber de verdade se a tabela existe:
+
+```bash
+curl -s "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/transactions?select=id&limit=1" \
+  -H "apikey: $NEXT_PUBLIC_SUPABASE_ANON_KEY"
+```
+
+`[]` significa que a tabela existe e a RLS está filtrando (é o esperado sem
+login). Um `PGRST205 Could not find the table` significa que o SQL não rodou.
+
+**"Enable Email provider" e "Confirm email" ficam colados.** Em
+*Authentication → Sign In / Providers → Email* os dois toggles são vizinhos, e
+desligar o de cima por engano derruba o login inteiro — o cadastro passa a
+responder `400 email_provider_disabled`. O de cima fica **ligado**; o de baixo é
+o que controla a exigência de confirmação.
+
+#### Confirmação de e-mail
+
+Com **Confirm email** ligado (o padrão, e o certo para uso real), o cadastro só
+vira sessão depois do clique no link, que volta para `/auth/callback`. O app já
+trata isso: mostra "Conta criada. Confira seu e-mail para confirmar o cadastro."
+
+> **Configure um SMTP próprio antes de abrir para outras pessoas.** O SMTP padrão
+> do Supabase é só para desenvolvimento: tem limite baixo de envios por hora e,
+> em vários planos, só entrega para membros do projeto. Na prática, alguém de
+> fora tenta se cadastrar e o e-mail nunca chega. Configure em
+> *Authentication → Emails → SMTP Settings* (Resend, SendGrid, Amazon SES).
 
 ### 2. Configure as variáveis
 
@@ -81,6 +111,21 @@ Abra <http://localhost:3000>.
 | `npm run start` | Sobe o build |
 | `npm run lint` | ESLint |
 
+## Testes
+
+```bash
+npm run test:rls    # RLS e constraints, direto no banco
+npm run test:e2e    # interface inteira num Chrome headless (precisa do npm run dev)
+```
+
+O `test:rls` cria dois usuários e prova que um não alcança os dados do outro. O
+`test:e2e` faz o caminho completo pela tela: cadastro, três lançamentos, conferência
+dos totais, exportação do CSV, os filtros, edição, exclusão e logout.
+
+Os dois precisam de **Confirm email desligado** enquanto rodam, e criam usuários
+`teste-*@example.com` que você apaga depois em *Authentication → Users*. Detalhes
+em [`tests/README.md`](tests/README.md).
+
 ## Deploy na Vercel
 
 1. Suba o repositório para o GitHub.
@@ -113,6 +158,7 @@ src/
     csv.ts, format.ts         exportação e formatação pt-BR
   proxy.ts                    renova a sessão e protege /dashboard
 supabase/migrations/          schema e políticas de RLS
+tests/                        testes de RLS e de interface
 ```
 
 ### Sobre as cores dos gráficos

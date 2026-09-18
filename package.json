@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:rls": "node --env-file=.env.local tests/rls.mjs",
+    "test:e2e": "node --env-file=.env.local tests/e2e.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",
